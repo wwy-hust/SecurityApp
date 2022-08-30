@@ -49,7 +49,10 @@ def generatePositions(positionFilePath):
 	ret = []
 	for stock, num in Stock.items():
 		stockInfo = StockInfoProxy(stock)
+		# try:
 		stockInfo.fetchCodeData()
+		# except:
+		# 	print("Error")
 		print(stockInfo)
 		ret.append((stockInfo.code, stockInfo.name, stockInfo.price, stockInfo.real_price, num, int(num * stockInfo.real_price)))
 

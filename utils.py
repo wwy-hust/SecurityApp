@@ -73,7 +73,7 @@ def getBasicData(getFileKey=None):
 
 	aMap = {
 		"foreign_exchange_data": ('fx_spot_quote', 'data/foreign_exchange_data.pickle', FOREIGN_EXCHANGE_DATA),
-		"a_stock_data": ('stock_zh_a_spot', 'data/a_stock_data.pickle', A_STOCK_DATA),
+		"a_stock_data": ('stock_zh_a_spot_em', 'data/a_stock_data.pickle', A_STOCK_DATA),
 		"hk_stock_data": ('stock_hk_spot', 'data/hk_stock_data.pickle', HK_STOCK_DATA),
 		"etf_data": ('fund_em_etf_fund_daily', 'data/etf_data.pickle', ETF_DATA),
 		"us_stock_data": ('stock_us_spot', 'data/us_stock_data.pickle', US_STOCK_DATA),
@@ -81,7 +81,7 @@ def getBasicData(getFileKey=None):
 
 	TIME_STAMP_FILE_PATH = "data/config.txt"
 
-	timeStr = time.strftime("%Y-%m-%d", time.localtime())
+	timeStr = time.strftime("%Y-%m-%d %H", time.localtime())
 	if os.path.exists(TIME_STAMP_FILE_PATH):
 		content = None
 		with open(TIME_STAMP_FILE_PATH) as cfgFile:

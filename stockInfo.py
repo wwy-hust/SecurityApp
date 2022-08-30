@@ -21,6 +21,11 @@ class CurrencyType(object):
 class CurrencyExchangeMgr(object):
 	_instance = None
 
+	LocalForeignExchangeRateMap = {
+		"HKD:CNY": 0.854,
+		"USD:CNY": 6.7015,
+	}
+
 	@classmethod
 	def instance(cls):
 		if cls._instance is None:
@@ -28,11 +33,23 @@ class CurrencyExchangeMgr(object):
 		return cls._instance
 
 	def __init__(self):
-		self.foreign_exchange_data = getBasicData("foreign_exchange_data")
+		self.foreign_exchange_data = None
+		try:
+			self.foreign_exchange_data = getBasicData("foreign_exchange_data")
+		except:
+			self.foreign_exchange_data = None
+			print("encounter error in fetching exchangeRate..")
 
 	def getExchangeRate(self, fromCurrencyType, toCurrencyType):
-		exchangeRate = float(self.foreign_exchange_data.loc[lambda df:df['ccyPair'] == "%s/%s" % (fromCurrencyType, toCurrencyType), 'bidPrc'].values[0])
-		return exchangeRate
+		if self.foreign_exchange_data is not None:
+			# print(self.foreign_exchange_data)
+			if "ccyPair" in self.foreign_exchange_data:
+				exchangeRate = float(self.foreign_exchange_data.loc[lambda df:df['ccyPair'] == "%s/%s" % (fromCurrencyType, toCurrencyType), 'bidPrc'].values[0])
+			else:
+				exchangeRate = float(self.foreign_exchange_data.loc[lambda df:df['货币对'] == "%s/%s" % (fromCurrencyType, toCurrencyType), '买报价'].values[0])
+			return exchangeRate
+		else:
+			return self.LocalForeignExchangeRateMap.get("%s:%s" % (fromCurrencyType, toCurrencyType), 1.0)
 
 
 def getCodeType(code):
@@ -111,16 +128,17 @@ class AStockInfo(StockInfoBase):
 
 		# Fetch Name & Price
 		a_stock_data = getBasicData("a_stock_data")
-		code_stock_data = a_stock_data.loc[lambda df:df['code'] == self.code, ['name', 'trade']]
+		# print("wwy__ code", self.code, a_stock_data)
+		code_stock_data = a_stock_data.loc[lambda df:df['代码'] == self.code, ['名称', '最新价']]
 		if len(code_stock_data) == 0:
 			return
 
-		self.data['price'] = float(code_stock_data['trade'].values[0])
+		self.data['price'] = float(code_stock_data['最新价'].values[0])
 		self.data['real_price'] = self.data['price']
-		self.data['name'] = code_stock_data['name'].values[0]
+		self.data['name'] = code_stock_data['名称'].values[0]
 
 		# Fetch MarketValue & PETTM
-		lg_indicator = ak.stock_a_lg_indicator(stock=self.code)
+		lg_indicator = ak.stock_a_lg_indicator(symbol=self.code)
 		self.data['market_value'] = round(lg_indicator['total_mv'][0] / 10000, 2)
 		self.data['pe_ttm'] = round(lg_indicator['pe_ttm'][0], 2)
 

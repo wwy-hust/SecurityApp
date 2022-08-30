@@ -21,3 +21,9 @@ python update_position.py
 在 valueTrack.xlsx 中左侧一列填入股票代码执行下列脚本即可更新基础信息、及当前市值。
 
 python track_market_value.py
+
+## History：
+2022.08.11 
+1. 汇率增加默认值，akshare获取不到时取默认值进行汇率换算
+2. pdframe中key同时支持英文与中文
+3. 新增股债利差分位脚本interest_margin.py
