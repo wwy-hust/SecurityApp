@@ -9,6 +9,7 @@
 
 1. 安装Anaconda https://www.anaconda.com/
 2. pip install akshare
+3. pip install dash
 
 ## Useage：
 
@@ -22,8 +23,16 @@ python update_position.py
 
 python track_market_value.py
 
+或
+
+python generate_market_value_html.py
+
 ## History：
 2022.08.11 
 1. 汇率增加默认值，akshare获取不到时取默认值进行汇率换算
 2. pdframe中key同时支持英文与中文
 3. 新增股债利差分位脚本interest_margin.py
+
+2022.10.08
+1. bugfix，修复StockInfo.py导致Proxy数据被覆盖的bug
+2. 新增generate_market_value_html.py，基于ploty.Dash展示追踪的公司净利润和估值
