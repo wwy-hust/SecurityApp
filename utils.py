@@ -52,6 +52,29 @@ def isCodeValid(code):
 	return isValid
 
 
+def getSymbolWithPrefix(code):
+	if isCodeAStock(code):
+		if code[0] in ('0', '3'):
+			return "sz" + code
+		else:
+			return "SH" + code
+	else:
+		return code
+
+
+def formatToString_yoy(yoy):
+	return "%02.02f%%" % (yoy * 100)
+
+
+def formatToString_profit(profit):
+	if profit > 10000000:	# 千万及亿如此显示
+		return "%02.02f亿" % (profit / 100000000)
+	elif profit > 10000:
+		return "%02.02f万" % (profit / 10000)
+	else:
+		return "%02.02f" % profit
+
+
 FOREIGN_EXCHANGE_DATA = None
 A_STOCK_DATA = None
 HK_STOCK_DATA = None
@@ -77,6 +100,7 @@ def getBasicData(getFileKey=None):
 		"hk_stock_data": ('stock_hk_spot', 'data/hk_stock_data.pickle', HK_STOCK_DATA),
 		"etf_data": ('fund_em_etf_fund_daily', 'data/etf_data.pickle', ETF_DATA),
 		"us_stock_data": ('stock_us_spot', 'data/us_stock_data.pickle', US_STOCK_DATA),
+
 	}
 
 	TIME_STAMP_FILE_PATH = "data/config.txt"
@@ -108,3 +132,19 @@ def getBasicData(getFileKey=None):
 			globalVal = pd.read_pickle(localFileName)
 		return globalVal
 
+
+def callAKShareFuncWithCache(funcName, *args, **kwargs):
+	localFileName = funcName
+	for arg in args:
+		localFileName += "_%s" % arg
+	for k, arg in kwargs.items():
+		localFileName += "_%s" % arg
+	localFilePath = "data/%s.pickle" % localFileName
+	if os.path.exists(localFilePath):
+		ret = pd.read_pickle(localFilePath)
+		print("read from cache %s" % localFileName)
+		return ret
+	else:
+		ret = getattr(ak, funcName)(*args)
+		ret.to_pickle(localFilePath)
+		return ret
