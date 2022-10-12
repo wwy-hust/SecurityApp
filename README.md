@@ -36,3 +36,7 @@ python generate_market_value_html.py
 2022.10.08
 1. bugfix，修复StockInfo.py导致Proxy数据被覆盖的bug
 2. 新增generate_market_value_html.py，基于ploty.Dash展示追踪的公司净利润和估值
+
+2022.10.12
+1. track_market_value.py 也自动更新季度净利润数据
+2. bugfix，修复StockInfoProxy中当前市值不正确的问题
