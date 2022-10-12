@@ -205,8 +205,9 @@ class AStockInfo(StockInfoBase):
 
 		# Fetch MarketValue & PETTM
 		lg_indicator = ak.stock_a_lg_indicator(symbol=self.code)
-		self.data['market_value'] = round(lg_indicator.iloc[-1]['total_mv'] / 10000, 2)
-		self.data['pe_ttm'] = round(lg_indicator.iloc[-1]['pe_ttm'], 2)
+		iLocIdx = 0 if lg_indicator.iloc[0]['trade_date'].year > lg_indicator.iloc[-1]['trade_date'].year else -1
+		self.data['market_value'] = round(lg_indicator.iloc[iLocIdx]['total_mv'] / 10000, 2)
+		self.data['pe_ttm'] = round(lg_indicator.iloc[iLocIdx]['pe_ttm'], 2)
 
 		# # Fetch Profit Statement
 		if fetchProfitStatement:
@@ -242,6 +243,7 @@ class HKStockInfo(StockInfoBase):
 
 		# # Fetch Profit Statement
 		if fetchProfitStatement:
+			return
 			df = callAKShareFuncWithCache("stock_financial_hk_report_em", stock=self.code, symbol="利润表", indicator="报告期")
 			# df = ak.stock_financial_hk_report_em(stock=self.code, symbol="利润表", indicator="报告期")
 			fetchLRBKeys = HK_STOCK_MAP.values()

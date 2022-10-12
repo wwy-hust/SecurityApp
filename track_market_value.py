@@ -71,7 +71,7 @@ def trackMarketValue(excelPath):
 		ROW_CNT = 7
 		for idx, stock in enumerate(Stock):
 			stockInfo = StockInfoProxy(stock)
-			stockInfo.fetchCodeData()
+			stockInfo.fetchCodeData(True)
 			ret[stock] = stockInfo
 			updateToExcel(ws, 2 + (idx * ROW_CNT), 1, 2 + (idx + 1) * ROW_CNT, 18, stockInfo)
 		for _, cell in ws._cells.items():
@@ -88,11 +88,15 @@ def updateToExcel(worksheet, startRow, startCol, endRow, endCol, stockInfo):
 	print(stockInfo.name, "mk_v:", stockInfo.market_value, "pe:", stockInfo.pe_ttm)
 
 	for row in range(rowCnt):
+		s1valid, s2valid, s3valid, s4valid = False, False, False, False
+		s1profit, s2profit, s3profit, s4profit = 0, 0, 0, 0
+		curRowYear = 0
 		for col in range(colCnt):
 			if col == COLOFFSET['年份'] and row in (1, 2, 3, 4, 5):
 				# 年份
 				if ws.cell(row=startRow + row, column=startCol + col).value in ("", None):
 					ws.cell(row=startRow + row, column=startCol + col).value = str(time.localtime().tm_year + row - 2)
+				curRowYear = ws.cell(row=startRow + row, column=startCol + col).value
 				continue
 			elif col == COLOFFSET['增长率'] and row in (2, 3, 4, 5):
 				# 逐年增长率
@@ -109,7 +113,42 @@ def updateToExcel(worksheet, startRow, startCol, endRow, endCol, stockInfo):
 					ws.cell(row=startRow + row, column=startCol + col).value = "25"
 				continue
 			elif col in (COLOFFSET['Q1净利'], COLOFFSET['Q2净利'], COLOFFSET['Q3净利'], COLOFFSET['Q4净利']):
+				if stockInfo.profit is None:
+					continue
+				reportDates = reportDateList(int(curRowYear))
+				if col == COLOFFSET['Q1净利']:
+					row_s1 = stockInfo.profit.loc[lambda df:df['REPORT_DATE'] =='%s 00:00:00' % reportDates[0],:]
+					if len(row_s1):
+						s1profit = float(row_s1['NETPROFIT'].values[0])
+						ws.cell(row=startRow + row, column=startCol + col).value = "%02.02f" % (s1profit / 100000000)
+						s1valid = True
+				elif col == COLOFFSET['Q2净利']:
+					row_s2 = stockInfo.profit.loc[lambda df:df['REPORT_DATE'] =='%s 00:00:00' % reportDates[1],:]
+					if len(row_s2):
+						s2profit = row_s2['NETPROFIT'].values[0]
+						ws.cell(row=startRow + row, column=startCol + col).value = "%02.02f" % (s2profit / 100000000)
+						s2valid = True
+				elif col == COLOFFSET['Q3净利']:
+					row_s3 = stockInfo.profit.loc[lambda df:df['REPORT_DATE'] =='%s 00:00:00' % reportDates[2],:]
+					if len(row_s3):
+						s3profit = row_s3['NETPROFIT'].values[0]
+						ws.cell(row=startRow + row, column=startCol + col).value = "%02.02f" % (s3profit / 100000000)
+						s3valid = True
+				else:
+					row_s4 = stockInfo.profit.loc[lambda df:df['REPORT_DATE'] =='%s 00:00:00' % reportDates[3],:]
+					if len(row_s4):
+						s4profit = row_s4['NETPROFIT'].values[0]
+						ws.cell(row=startRow + row, column=startCol + col).value = "%02.02f" % (s4profit / 100000000)
+						s4valid = True
 				continue
+			
+			if all((s1valid, s2valid, s3valid, s4valid)):
+				resultProfit = sum((s1profit, s2profit, s3profit, s4profit)) / 100000000
+				lastProfit = ws.cell(row=startRow + row - 1, column=startCol + COLOFFSET['净利润']).value
+				if lastProfit:
+					ws.cell(row=startRow + row, column=startCol + COLOFFSET['增长率']).value = ((resultProfit / float(lastProfit)) - 1)
+				else:
+					ws.cell(row=startRow + row, column=startCol + COLOFFSET['净利润']).value = "%02.02f" % resultProfit
 			ws.cell(row=startRow + row, column=startCol + col).value = ""
 
 	font = Font(bold=True)

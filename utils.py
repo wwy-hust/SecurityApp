@@ -75,6 +75,15 @@ def formatToString_profit(profit):
 		return "%02.02f" % profit
 
 
+def reportDateList(year):
+    ret = []
+    ret.append("%d-03-31" % year)
+    ret.append("%d-06-30" % year)
+    ret.append("%d-09-30" % year)
+    ret.append("%d-12-31" % year)
+    return tuple(ret)
+
+
 FOREIGN_EXCHANGE_DATA = None
 A_STOCK_DATA = None
 HK_STOCK_DATA = None

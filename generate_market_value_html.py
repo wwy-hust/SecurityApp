@@ -33,15 +33,6 @@ MARKET_VALUE_CONFIG_DICT = {}
 LOCAL_STOCK_DICT = {}
 
 
-def reportDateList(year):
-    ret = []
-    ret.append("%d-03-31" % year)
-    ret.append("%d-06-30" % year)
-    ret.append("%d-09-30" % year)
-    ret.append("%d-12-31" % year)
-    return tuple(ret)
-
-
 def generateHtml():
     global MARKET_VALUE_CONFIG_DICT
     with open(CONFIG_FILENAME, "r") as f:
