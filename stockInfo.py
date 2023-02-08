@@ -204,10 +204,14 @@ class AStockInfo(StockInfoBase):
 		self.data['name'] = code_stock_data['名称'].values[0]
 
 		# Fetch MarketValue & PETTM
-		lg_indicator = ak.stock_a_lg_indicator(symbol=self.code)
-		iLocIdx = 0 if lg_indicator.iloc[0]['trade_date'].year > lg_indicator.iloc[-1]['trade_date'].year else -1
-		self.data['market_value'] = round(lg_indicator.iloc[iLocIdx]['total_mv'] / 10000, 2)
-		self.data['pe_ttm'] = round(lg_indicator.iloc[iLocIdx]['pe_ttm'], 2)
+		try:
+			lg_indicator = ak.stock_a_lg_indicator(symbol=self.code)
+			iLocIdx = 0 if lg_indicator.iloc[0]['trade_date'].year > lg_indicator.iloc[-1]['trade_date'].year else -1
+			self.data['market_value'] = round(lg_indicator.iloc[iLocIdx]['total_mv'] / 10000, 2)
+			self.data['pe_ttm'] = round(lg_indicator.iloc[iLocIdx]['pe_ttm'], 2)
+		except:
+			self.data['market_value'] = 1
+			self.data['pe_ttm'] = 0.0
 
 		# # Fetch Profit Statement
 		if fetchProfitStatement:

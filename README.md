@@ -40,3 +40,7 @@ python generate_market_value_html.py
 2022.10.12
 1. track_market_value.py 也自动更新季度净利润数据
 2. bugfix，修复StockInfoProxy中当前市值不正确的问题
+
+2023.02.08
+1. bugfix，A股获取PE-TTM、MarketValue等数据失败情况的处理
+2. 新增economy_data.py导出akshare中常用的宏观数据
