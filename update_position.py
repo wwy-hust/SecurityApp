@@ -8,7 +8,7 @@ import openpyxl
 import traceback
 
 from utils import *
-from stockInfo import StockInfoProxy
+from stockInfo import StockInfoProxy, CodeType
 import stockInfo
 stockInfo.__init_globals()
 
@@ -30,6 +30,10 @@ Stock = {
 	'CNY': 15433 + 1381,
 }
 
+# 总资产 & 净资产，用于计算仓位
+TOTAL_MARKET_VALUE = 0
+TOTAL_NET_MARKET_VALUE = 0
+
 
 def getStockCodeDictFromExcel(excelPath, selectCols):
 	assert len(selectCols) == 2
@@ -41,7 +45,7 @@ def getStockCodeDictFromExcel(excelPath, selectCols):
 
 
 def generatePositions(positionFilePath):
-	global Stock
+	global Stock, TOTAL_MARKET_VALUE, TOTAL_NET_MARKET_VALUE
 	retDict = getStockCodeDictFromExcel(positionFilePath, ['Code', 'Num'])
 	if retDict:
 		Stock = retDict
@@ -54,7 +58,13 @@ def generatePositions(positionFilePath):
 		# except:
 		# 	print("Error")
 		print(stockInfo)
-		ret.append((stockInfo.code, stockInfo.name, stockInfo.price, stockInfo.real_price, num, int(num * stockInfo.real_price)))
+		realValue = int(num * stockInfo.real_price)
+		ret.append((stockInfo.code, stockInfo.name, stockInfo.price, stockInfo.real_price, num, realValue))
+		if stockInfo.code_type == CodeType.CURRENCY:
+			TOTAL_NET_MARKET_VALUE += realValue
+		else:
+			TOTAL_MARKET_VALUE += realValue
+			TOTAL_NET_MARKET_VALUE += realValue
 
 	sumVal = 0
 	for entry in ret:
@@ -82,7 +92,10 @@ def generatePositions(positionFilePath):
 		ws.cell(row=rowIdx, column=6).value = '=%s*%s' % (ws.cell(row=rowIdx, column=4).coordinate, ws.cell(row=rowIdx, column=5).coordinate)
 		ws.cell(row=rowIdx, column=7).value = '=%s/J1' % (ws.cell(row=rowIdx, column=6).coordinate)
 	ws['J1'].value = '=SUM(F2:F%d)' % (rowIdx)
+	ws['L1'].value = '=%02f' % (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))
 	wb.save(positionFilePath)
+
+	print("TOTAL:%d | POSITION:%02f" % (TOTAL_NET_MARKET_VALUE, (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))))
 
 
 if __name__ == "__main__":

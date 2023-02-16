@@ -44,3 +44,6 @@ python generate_market_value_html.py
 2023.02.08
 1. bugfix，A股获取PE-TTM、MarketValue等数据失败情况的处理
 2. 新增economy_data.py导出akshare中常用的宏观数据
+
+2023.02.16
+1. update_position.py增加计算仓位的功能。
