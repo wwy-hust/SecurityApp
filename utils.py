@@ -89,6 +89,7 @@ A_STOCK_DATA = None
 HK_STOCK_DATA = None
 ETF_DATA = None
 US_STOCK_DATA = None
+OPEN_FUND_DAILY_DATA = None
 
 
 def clearCacheData():
@@ -97,11 +98,11 @@ def clearCacheData():
 			os.remove(os.path.join(path, _file))
 		for _dir in dir_list:
 			os.rmdir(os.path.join(path, _dir))
-		print("Cleared All file under data")
+		print("Cleared All file under data folder")
 
 
 def getBasicData(getFileKey=None):
-	global FOREIGN_EXCHANGE_DATA, A_STOCK_DATA, HK_STOCK_DATA, ETF_DATA, US_STOCK_DATA
+	global FOREIGN_EXCHANGE_DATA, A_STOCK_DATA, HK_STOCK_DATA, ETF_DATA, US_STOCK_DATA, OPEN_FUND_DAILY_DATA
 
 	aMap = {
 		"foreign_exchange_data": ('fx_spot_quote', 'data/foreign_exchange_data.pickle', FOREIGN_EXCHANGE_DATA),
@@ -109,7 +110,7 @@ def getBasicData(getFileKey=None):
 		"hk_stock_data": ('stock_hk_spot', 'data/hk_stock_data.pickle', HK_STOCK_DATA),
 		"etf_data": ('fund_em_etf_fund_daily', 'data/etf_data.pickle', ETF_DATA),
 		"us_stock_data": ('stock_us_spot', 'data/us_stock_data.pickle', US_STOCK_DATA),
-
+		"open_fund_daily_data": ('fund_open_fund_daily_em', 'data/fund_open_fund_daily_em.pickle', OPEN_FUND_DAILY_DATA),
 	}
 
 	TIME_STAMP_FILE_PATH = "data/config.txt"

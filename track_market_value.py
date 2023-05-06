@@ -22,7 +22,10 @@ from stockInfo import StockInfoProxy
 import stockInfo
 stockInfo.__init_globals()
 
+
+####################### Settings #######################
 CHART = False
+####################### Settings #######################
 
 Stock = ['603087', '00700', 'SY']
 COLOFFSET = {

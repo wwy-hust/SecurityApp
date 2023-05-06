@@ -205,7 +205,7 @@ class AStockInfo(StockInfoBase):
 
 		# Fetch MarketValue & PETTM
 		try:
-			lg_indicator = ak.stock_a_lg_indicator(symbol=self.code)
+			lg_indicator = ak.stock_a_indicator_lg(symbol=self.code)
 			iLocIdx = 0 if lg_indicator.iloc[0]['trade_date'].year > lg_indicator.iloc[-1]['trade_date'].year else -1
 			self.data['market_value'] = round(lg_indicator.iloc[iLocIdx]['total_mv'] / 10000, 2)
 			self.data['pe_ttm'] = round(lg_indicator.iloc[iLocIdx]['pe_ttm'], 2)
@@ -240,10 +240,14 @@ class HKStockInfo(StockInfoBase):
 		self.data['name'] = hk_stock_filtered['name'].values[0]
 
 		# Fetch MarketValue & PETTM
-		indicator1 = ak.stock_hk_eniu_indicator(symbol='hk' + self.code, indicator='市值')
-		indicator2 = ak.stock_hk_eniu_indicator(symbol='hk' + self.code, indicator='市盈率')
-		self.data['market_value'] = round(indicator1['market_value'].values[-1], 2)
-		self.data['pe_ttm'] = round(indicator2['pe'].values[-1], 2)
+		try:
+			indicator1 = ak.stock_hk_indicator_eniu(symbol='hk' + self.code, indicator='市值')
+			indicator2 = ak.stock_hk_indicator_eniu(symbol='hk' + self.code, indicator='市盈率')
+			self.data['market_value'] = round(indicator1['market_value'].values[-1], 2)
+			self.data['pe_ttm'] = round(indicator2['pe'].values[-1], 2)
+		except:
+			self.data['market_value'] = 0
+			self.data['pe_ttm'] = 0
 
 		# # Fetch Profit Statement
 		if fetchProfitStatement:
