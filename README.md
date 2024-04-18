@@ -3,7 +3,7 @@
 
 数据来源为Akshare https://github.com/akfamily/akshare
 
-支持A股、港股、美股、外汇。
+支持A股、港股、美股、外汇、可转债、ETF。
 
 ## Requirement：
 
@@ -28,6 +28,10 @@ python track_market_value.py
 python generate_market_value_html.py
 
 ## History：
+
+2024.4.18
+1. 新增可转债支持
+
 2022.08.11 
 1. 汇率增加默认值，akshare获取不到时取默认值进行汇率换算
 2. pdframe中key同时支持英文与中文
