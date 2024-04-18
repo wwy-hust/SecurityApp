@@ -2,6 +2,8 @@ pip install akshare -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host=mir
 
 pip install akshare --upgrade -i https://pypi.org/simple
 
+pip install selenium
+
 python update_position.py
 python track_market_value.py
 echo %d% %t%

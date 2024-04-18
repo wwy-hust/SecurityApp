@@ -6,9 +6,10 @@ import math
 import os, sys
 import openpyxl
 import traceback
+import argparse
 
 from utils import *
-from stockInfo import StockInfoProxy, CodeType
+from stockInfo import StockInfoProxy, CodeType, TypeInPortfolio
 import stockInfo
 stockInfo.__init_globals()
 
@@ -34,6 +35,9 @@ Stock = {
 TOTAL_MARKET_VALUE = 0
 TOTAL_NET_MARKET_VALUE = 0
 
+TOTAL_ASSET_IN_A = 0
+TOTAL_ASSET_IN_HK = 0
+TOTAL_ASSET_IN_US = 0
 
 def getStockCodeDictFromExcel(excelPath, selectCols):
 	assert len(selectCols) == 2
@@ -46,6 +50,7 @@ def getStockCodeDictFromExcel(excelPath, selectCols):
 
 def generatePositions(positionFilePath):
 	global Stock, TOTAL_MARKET_VALUE, TOTAL_NET_MARKET_VALUE
+	global TOTAL_ASSET_IN_A, TOTAL_ASSET_IN_HK, TOTAL_ASSET_IN_US
 	retDict = getStockCodeDictFromExcel(positionFilePath, ['Code', 'Num'])
 	if retDict:
 		Stock = retDict
@@ -59,24 +64,38 @@ def generatePositions(positionFilePath):
 		# 	print("Error")
 		print(stockInfo)
 		realValue = int(num * stockInfo.real_price)
-		ret.append((stockInfo.code, stockInfo.name, stockInfo.price, stockInfo.real_price, num, realValue))
+		ret.append((stockInfo.code, stockInfo.typeInPorfolio, stockInfo.name, stockInfo.price, stockInfo.real_price, num, realValue))
 		if stockInfo.code_type == CodeType.CURRENCY:
 			TOTAL_NET_MARKET_VALUE += realValue
 		else:
 			TOTAL_MARKET_VALUE += realValue
 			TOTAL_NET_MARKET_VALUE += realValue
 
-	sumVal = 0
+			if stockInfo.typeInPorfolio == TypeInPortfolio.HK:
+				TOTAL_ASSET_IN_HK += realValue
+			elif stockInfo.typeInPorfolio == TypeInPortfolio.US:
+				TOTAL_ASSET_IN_US += realValue
+			elif stockInfo.typeInPorfolio == TypeInPortfolio.A:
+				TOTAL_ASSET_IN_A += realValue
+   
+	NetTotalAsset = 0
+	TotalAsset = 0
 	for entry in ret:
-		sumVal += entry[5]
+		NetTotalAsset += entry[6]
+		if entry[6] > 0:
+			TotalAsset += entry[6]
 
-	percentList = []
+	percentListInNetTotalAsset = []
+	percentListInTotalAsset = []
 	for entry in ret:
-		percent = float('%.4f' % float(entry[5] / sumVal))
-		percentList.append(percent)
+		percent = float('%.4f' % float(entry[6] / NetTotalAsset))
+		percentListInNetTotalAsset.append(percent)
+		percent1 = float('%.4f' % float(entry[6] / TotalAsset))
+		percentListInTotalAsset.append(percent1)
 
-	df = pd.DataFrame(ret, columns=['Code', 'Name', 'Price', 'RealPrice', 'Num', 'Value'])
-	df['Percent'] = percentList
+	df = pd.DataFrame(ret, columns=['Code', 'Type', 'Name', 'Price', 'RealPrice', 'Num', 'Value'])
+	df['PercentInNetTotalAsset'] = percentListInNetTotalAsset
+	df['PercentInTotalAsset'] = percentListInTotalAsset
 	df.sort_values(by='Value', ascending=False, inplace=True)
 	print(df)
 	# df.to_excel(positionFilePath, index=False)
@@ -91,13 +110,37 @@ def generatePositions(positionFilePath):
 		ws.cell(row=rowIdx, column=5).value = row[1]['Num']
 		ws.cell(row=rowIdx, column=6).value = '=%s*%s' % (ws.cell(row=rowIdx, column=4).coordinate, ws.cell(row=rowIdx, column=5).coordinate)
 		ws.cell(row=rowIdx, column=7).value = '=%s/J1' % (ws.cell(row=rowIdx, column=6).coordinate)
-	ws['J1'].value = '=SUM(F2:F%d)' % (rowIdx)
-	ws['L1'].value = '=%02f' % (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))
+		ws.cell(row=rowIdx, column=8).value = '=%s/M1' % (ws.cell(row=rowIdx, column=6).coordinate)
+	ws['J1'].value = '=SUM(F2:F%d)' % (rowIdx)	# NetTotalAsset
+	ws['M1'].value = '%d' % TotalAsset	# TotalAsset
+	ws['K1'].value = '=%02f' % (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))	# 杠杆率
+	ws['K2'].value = '=SUM(G2:G4)'
+	ws['K3'].value = '=SUM(G2:G6)'
+	ws['K4'].value = '=SUM(G2:G11)'
+
+	ws['M2'].value = '=SUM(H2:H4)'
+	ws['M3'].value = '=SUM(H2:H6)'
+	ws['M4'].value = '=SUM(H2:H11)'
+
 	wb.save(positionFilePath)
 
-	print("TOTAL:%d | POSITION:%02f" % (TOTAL_NET_MARKET_VALUE, (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))))
+	print("NetTotalAsset:%d | TotalAsset:%d | POSITION:%02f" % (NetTotalAsset, TotalAsset, (float(TOTAL_MARKET_VALUE) / float(TOTAL_NET_MARKET_VALUE))))
+	print("A:%.2f | HK:%.2f | US:%.2f" % ((float)(TOTAL_ASSET_IN_A)/(float)(TotalAsset), (float)(TOTAL_ASSET_IN_HK)/(float)(TotalAsset),(float)(TOTAL_ASSET_IN_US)/(float)(TotalAsset)))
+	
+
+def updateAkShareData():
+	cacheAllAKShareData()
 
 
 if __name__ == "__main__":
-	generatePositions("position.xlsx")
+	parser = argparse.ArgumentParser(description='这是一个示例程序。')
+	parser.add_argument('--update', dest='doUpdateAkshareData', action='store_const',
+                    const=True, default=False,
+                    help='update all akshare cache')
+	args = parser.parse_args()
+
+	if args.doUpdateAkshareData:
+		updateAkShareData()
+	else:
+		generatePositions("position.xlsx")
 	# outputFinancialInfo("valueTrack.xlsx")

@@ -3,14 +3,29 @@ from utils import *
 from copy import deepcopy
 
 
+US_STOCK_PREDEFINED_PRICE = {
+	"VKTXW": 63,
+	"VIXY": 14.70,
+}
+
+
 class CodeType(object):
 	A_STOCK = 0
 	HK_STOCK = 1
 	US_STOCK = 2
 	ETF = 3
 	CURRENCY = 4
+	ZH_CONVERTIBLE_BOND = 5
 
 	INVALID = 9999
+
+
+class TypeInPortfolio(object):
+	A = "A"
+	HK = "HK"
+	US = "US"
+	CASH = "CASH"
+	INVALID = "INV"
 
 
 class CurrencyType(object):
@@ -116,6 +131,8 @@ class CurrencyExchangeMgr(object):
 def getCodeType(code):
 	if not isCodeValid(code):
 		code_type = CodeType.INVALID
+	elif isCodeZHConvertibleBond(code):
+		code_type = CodeType.ZH_CONVERTIBLE_BOND
 	elif isCodeAStock(code):
 		code_type = CodeType.A_STOCK
 	elif isCodeHKStock(code):
@@ -129,6 +146,25 @@ def getCodeType(code):
 	else:
 		code_type = CodeType.INVALID
 	return code_type
+
+
+def getTypeInPortfolio(stockInfo):
+	if stockInfo.code_type == CodeType.HK_STOCK:
+		return TypeInPortfolio.HK
+	elif stockInfo.code_type == CodeType.US_STOCK:
+		return TypeInPortfolio.US
+	elif stockInfo.code_type == CodeType.A_STOCK or stockInfo.code_type == CodeType.ZH_CONVERTIBLE_BOND:
+		return TypeInPortfolio.A
+	elif stockInfo.code_type == CodeType.ETF:
+		if stockInfo.code in FOREIGN_ETF_CODELIST:
+			return TypeInPortfolio.US
+		elif stockInfo.code in HK_ETF_CODELIST:
+			return TypeInPortfolio.HK
+		else:
+			return TypeInPortfolio.A
+	elif stockInfo.code_type == CodeType.CURRENCY:
+		return TypeInPortfolio.CASH
+	return TypeInPortfolio.INVALID
 
 
 class StockInfoClass(type):
@@ -147,6 +183,7 @@ class StockInfoProxy(object):
 		self.code = code
 		self.code_type = getCodeType(code)
 		self.stockInfo = None
+		self.typeInPorfolio = getTypeInPortfolio(self)
 
 	def __getattr__(self, name):
 		if self.stockInfo:
@@ -258,25 +295,37 @@ class HKStockInfo(StockInfoBase):
 			df1 = df.loc[:, fetchLRBKeys]
 			self.data['profit'] = df1
 
-
 class USStockInfo(StockInfoBase):
 	currencyType = CurrencyType.USD
 	codeType = CodeType.US_STOCK
 
 	def fetchCodeData(self, fetchProfitStatement=False):
+		global US_STOCK_PREDEFINED_PRICE
 		self.resetData()
 
 		# Fetch Name & Price
 		us_stock_data = getBasicData("us_stock_data")
+
 		us_stock_filtered = us_stock_data.loc[lambda df:df['symbol'] == self.code, ['cname', 'price', 'mktcap', 'pe']]
-		if len(us_stock_filtered) == 0:
+		if len(us_stock_filtered) == 0 and self.code not in US_STOCK_PREDEFINED_PRICE:
 			return
 
-		self.data['price'] = float(us_stock_filtered['price'].values[0])
+		if self.code in US_STOCK_PREDEFINED_PRICE:
+			self.data['price'] = US_STOCK_PREDEFINED_PRICE[self.code]
+		else:
+			self.data['price'] = float(us_stock_filtered['price'].values[0])
+
 		self.data['real_price'] = self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate('USD', 'CNY'))
-		self.data['name'] = us_stock_filtered['cname'].values[0]
-		self.data['market_value'] = round(float(us_stock_filtered['mktcap'].values[0]) / 100000000, 2)
-		self.data['pe_ttm'] = round(float(us_stock_filtered['pe'].values[0]), 2)
+
+		if len(us_stock_filtered) != 0:
+			self.data['name'] = us_stock_filtered['cname'].values[0]
+			self.data['market_value'] = round(float(us_stock_filtered['mktcap'].values[0]) / 100000000, 2)
+			if us_stock_filtered['pe'].values[0]:
+				self.data['pe_ttm'] = round(float(us_stock_filtered['pe'].values[0]), 2)
+			else:
+				self.data['pe_ttm'] = 0
+		else:
+			self.data['name'] = self.code
 
 		# # Fetch Profit Statement
 		if fetchProfitStatement:
@@ -290,14 +339,16 @@ class ETFStockInfo(StockInfoBase):
 		self.resetData()
 
 		etf_data = getBasicData("etf_data")
-		etf_filtered = etf_data.loc[lambda df:df['基金代码'] == self.code, ["基金简称", "市价"]]
+		etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
 		if len(etf_filtered) == 0:
-			return
+			etf_data = getBasicData("lof_data")
+			etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
+			if len(etf_filtered) == 0:
+				return
 
-		self.data['price'] = float(etf_filtered["市价"].values[0])
+		self.data['price'] = float(etf_filtered["最新价"].values[0])
 		self.data['real_price'] = self.data['price']
-		self.data['name'] = etf_filtered["基金简称"].values[0]
-
+		self.data['name'] = etf_filtered["名称"].values[0]
 
 class CurrencyInfo(StockInfoBase):
 	currencyType = CurrencyType.CNY
@@ -311,6 +362,22 @@ class CurrencyInfo(StockInfoBase):
 		else:
 			self.data['price'] = float(CurrencyExchangeMgr.instance().getExchangeRate(self.code, 'CNY'))
 		self.data['real_price'] = self.data['price']
+
+
+class BondInfo(StockInfoBase):
+	currencyType = CurrencyType.CNY
+	codeType = CodeType.ZH_CONVERTIBLE_BOND
+
+	def fetchCodeData(self):
+		self.resetData()
+		zh_bond_data = getBasicData("zh_convertible_bond_data")
+		code_bond_data = zh_bond_data.loc[lambda df:df["code"] == self.code, ['name', 'trade']]
+		if len(code_bond_data) == 0:
+			return
+	
+		self.data['price'] = float(code_bond_data['trade'].values[0])
+		self.data['real_price'] = self.data['price']
+		self.data['name'] = code_bond_data['name'].values[0]
 
 
 def __init_globals():

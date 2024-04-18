@@ -89,38 +89,38 @@ macro_china_xfzxx_df.to_excel("economyData/消费者信心指数.xlsx")
 macro_china_consumer_goods_retail_df = ak.macro_china_consumer_goods_retail()
 macro_china_consumer_goods_retail_df.to_excel("economyData/社会消费品零售总额.xlsx")
 
-macro_china_society_electricity_df = ak.macro_china_society_electricity()
-macro_china_society_electricity_df.to_excel("economyData/全社会用电分类情况表.xlsx")
+# macro_china_society_electricity_df = ak.macro_china_society_electricity()
+# macro_china_society_electricity_df.to_excel("economyData/全社会用电分类情况表.xlsx")
 
-macro_china_society_traffic_volume_df = ak.macro_china_society_traffic_volume()
-macro_china_society_traffic_volume_df.to_excel("economyData/全社会客货运输量.xlsx")
+# macro_china_society_traffic_volume_df = ak.macro_china_society_traffic_volume()
+# macro_china_society_traffic_volume_df.to_excel("economyData/全社会客货运输量.xlsx")
 
-macro_china_passenger_load_factor_df = ak.macro_china_passenger_load_factor()
-macro_china_passenger_load_factor_df.to_excel("economyData/民航客座率及载运率.xlsx")
+# macro_china_passenger_load_factor_df = ak.macro_china_passenger_load_factor()
+# macro_china_passenger_load_factor_df.to_excel("economyData/民航客座率及载运率.xlsx")
 
-macro_china_freight_index_df = ak.macro_china_freight_index()
-macro_china_freight_index_df.to_excel("economyData/航贸运价指数.xlsx")
+# macro_china_freight_index_df = ak.macro_china_freight_index()
+# macro_china_freight_index_df.to_excel("economyData/航贸运价指数.xlsx")
 
-macro_china_central_bank_balance_df = ak.macro_china_central_bank_balance()
-macro_china_central_bank_balance_df.to_excel("economyData/央行货币当局资产负债.xlsx")
+# macro_china_central_bank_balance_df = ak.macro_china_central_bank_balance()
+# macro_china_central_bank_balance_df.to_excel("economyData/央行货币当局资产负债.xlsx")
 
-macro_china_insurance_df = ak.macro_china_insurance()
-macro_china_insurance_df.to_excel("economyData/保险业经营情况.xlsx")
+# macro_china_insurance_df = ak.macro_china_insurance()
+# macro_china_insurance_df.to_excel("economyData/保险业经营情况.xlsx")
 
-macro_china_supply_of_money_df = ak.macro_china_supply_of_money()
-macro_china_supply_of_money_df.to_excel("economyData/货币供应量.xlsx")
+# macro_china_supply_of_money_df = ak.macro_china_supply_of_money()
+# macro_china_supply_of_money_df.to_excel("economyData/货币供应量.xlsx")
 
-macro_china_foreign_exchange_gold_df = ak.macro_china_foreign_exchange_gold()
-macro_china_foreign_exchange_gold_df.to_excel("economyData/央行黄金和外汇储备.xlsx")
+# macro_china_foreign_exchange_gold_df = ak.macro_china_foreign_exchange_gold()
+# macro_china_foreign_exchange_gold_df.to_excel("economyData/央行黄金和外汇储备.xlsx")
 
-macro_china_stock_market_cap_df = ak.macro_china_stock_market_cap()
-macro_china_stock_market_cap_df.to_excel("economyData/全国股票交易统计表.xlsx")
+# macro_china_stock_market_cap_df = ak.macro_china_stock_market_cap()
+# macro_china_stock_market_cap_df.to_excel("economyData/全国股票交易统计表.xlsx")
 
-macro_china_rmb_df = ak.macro_china_rmb()
-macro_china_rmb_df.to_excel("economyData/人民币汇率中间价报告.xlsx")
+# macro_china_rmb_df = ak.macro_china_rmb()
+# macro_china_rmb_df.to_excel("economyData/人民币汇率中间价报告.xlsx")
 
-macro_china_market_margin_sh_df = ak.macro_china_market_margin_sh()
-macro_china_market_margin_sh_df.to_excel("economyData/上海融资融券报告.xlsx")
+# macro_china_market_margin_sh_df = ak.macro_china_market_margin_sh()
+# macro_china_market_margin_sh_df.to_excel("economyData/上海融资融券报告.xlsx")
 
 macro_usa_cpi_monthly_se = ak.macro_usa_cpi_monthly()
 macro_usa_cpi_monthly_se.to_excel("economyData/美国CPI月率报告.xlsx")

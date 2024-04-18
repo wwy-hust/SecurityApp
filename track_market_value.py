@@ -88,7 +88,7 @@ def updateToExcel(worksheet, startRow, startCol, endRow, endCol, stockInfo):
 	rowCnt = endRow - startRow
 	colCnt = endCol - startCol
 
-	print(stockInfo.name, "mk_v:", stockInfo.market_value, "pe:", stockInfo.pe_ttm)
+	print(stockInfo.name, "mk_v:", stockInfo.market_value, "pe_ttm:", stockInfo.pe_ttm)
 
 	for row in range(rowCnt):
 		s1valid, s2valid, s3valid, s4valid = False, False, False, False
@@ -144,15 +144,15 @@ def updateToExcel(worksheet, startRow, startCol, endRow, endCol, stockInfo):
 						ws.cell(row=startRow + row, column=startCol + col).value = "%02.02f" % (s4profit / 100000000)
 						s4valid = True
 				continue
-			
-			if all((s1valid, s2valid, s3valid, s4valid)):
-				resultProfit = sum((s1profit, s2profit, s3profit, s4profit)) / 100000000
-				lastProfit = ws.cell(row=startRow + row - 1, column=startCol + COLOFFSET['净利润']).value
-				if lastProfit:
-					ws.cell(row=startRow + row, column=startCol + COLOFFSET['增长率']).value = ((resultProfit / float(lastProfit)) - 1)
-				else:
-					ws.cell(row=startRow + row, column=startCol + COLOFFSET['净利润']).value = "%02.02f" % resultProfit
-			ws.cell(row=startRow + row, column=startCol + col).value = ""
+		
+		# print("row", row, ", ", s1valid, s2valid, s3valid, s4valid)
+		if all((s1valid, s2valid, s3valid, s4valid)):
+			resultProfit = sum((s1profit, s2profit, s3profit, s4profit)) / 100000000
+			lastProfit = ws.cell(row=startRow + row - 1, column=startCol + COLOFFSET['净利润']).value
+			if lastProfit:
+				ws.cell(row=startRow + row, column=startCol + COLOFFSET['增长率']).value = ((resultProfit / float(lastProfit)) - 1)
+			ws.cell(row=startRow + row, column=startCol + COLOFFSET['净利润']).value = "%02.02f" % resultProfit
+		ws.cell(row=startRow + row, column=startCol + col).value = ""
 
 	font = Font(bold=True)
 	ws.cell(row=startRow, column=startCol).value = stockInfo.code
