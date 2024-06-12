@@ -13,6 +13,9 @@
 
 ## Useage：
 
+利用AKShare更新本地数据，只更新缓存，不更新xlsx文件
+python update_position.py --update
+
 更新仓位：
 首先在 position.xlsx 中更新股票代码（Code）及数量（Num），关闭文档后执行下列脚本即可更新仓位。
 
@@ -51,3 +54,7 @@ python generate_market_value_html.py
 
 2023.02.16
 1. update_position.py增加计算仓位的功能。
+
+2024.6.10
+1. 重构，股票代码前面增加前缀代表股票分类，例如a. hk. us. cash.
+2. 对于获取不到数据的标的，可以在StockInfoLibrary/UserDefinedStockInfoData.py中自定义名称和价格

@@ -17,10 +17,9 @@ from openpyxl.chart.series import SeriesLabel
 from openpyxl.chart.data_source import StrRef
 from openpyxl.chart.label import DataLabel, DataLabelList
 
-from utils import *
-from stockInfo import StockInfoProxy
-import stockInfo
-stockInfo.__init_globals()
+from StockInfoLibrary.StockInfoClass import StockInfoProxy
+from StockInfoLibrary.AkShareDataHelper import *
+from StockInfoLibrary.TypeDefine import CodeType, TypeInPortfolio
 
 
 ####################### Settings #######################
@@ -50,6 +49,27 @@ COLOFFSET = {
 }
 
 
+def is_contains_chinese(strs):
+	for _char in strs:
+		if '\u4e00' <= _char <= '\u9fa5':
+			return True
+	return False
+
+
+def containInValidChar(strs):
+	for c in ('.', '*', ',', '`', '!', '@', '#', '$', '%', '^', '&', '(', ')'):
+		if c in strs:
+			return True
+	return False
+
+
+def isCodeValid(code):
+	code = str(code)
+	isValid = code != 'nan' and not is_contains_chinese(code) and not containInValidChar(code)
+	# print('checking code', code, isValid)
+	return isValid
+
+
 def getStockCodeListFromExcel(excelPath, sheetName, codeTitle):
 	if os.path.exists(excelPath):
 		sheet = pd.read_excel(excelPath, sheet_name=sheetName)
@@ -73,8 +93,9 @@ def trackMarketValue(excelPath):
 		ret = {}
 		ROW_CNT = 7
 		for idx, stock in enumerate(Stock):
-			stockInfo = StockInfoProxy(stock)
-			stockInfo.fetchCodeData(True)
+			realstockCode = "a." + stock
+			stockInfo = StockInfoProxy(realstockCode)
+			stockInfo.fetchCodeData() #(True)
 			ret[stock] = stockInfo
 			updateToExcel(ws, 2 + (idx * ROW_CNT), 1, 2 + (idx + 1) * ROW_CNT, 18, stockInfo)
 		for _, cell in ws._cells.items():

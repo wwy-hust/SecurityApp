@@ -8,28 +8,11 @@ import openpyxl
 import traceback
 import argparse
 
-from utils import *
-from stockInfo import StockInfoProxy, CodeType, TypeInPortfolio
-import stockInfo
-stockInfo.__init_globals()
+from StockInfoLibrary.StockInfoClass import StockInfoProxy
+from StockInfoLibrary.AkShareDataHelper import *
+from StockInfoLibrary.TypeDefine import CodeType, TypeInPortfolio
 
-
-Stock = {
-	'000876': 1000,
-	'300192': 6400,
-	'600025': 6000,
-	'688300': 879,
-
-	'00788': 42000,
-	'01448': 2000,
-
-	'512980': 16700,
-
-	'SY': 200,
-
-	'HKD': 46621,
-	'CNY': 15433 + 1381,
-}
+Stock = {}
 
 # 总资产 & 净资产，用于计算仓位
 TOTAL_MARKET_VALUE = 0
@@ -64,7 +47,7 @@ def generatePositions(positionFilePath):
 		# 	print("Error")
 		print(stockInfo)
 		realValue = int(num * stockInfo.real_price)
-		ret.append((stockInfo.code, stockInfo.typeInPorfolio, stockInfo.name, stockInfo.price, stockInfo.real_price, num, realValue))
+		ret.append((stockInfo.originCode, stockInfo.typeInPorfolio, stockInfo.name, stockInfo.price, stockInfo.real_price, num, realValue))
 		if stockInfo.code_type == CodeType.CURRENCY:
 			TOTAL_NET_MARKET_VALUE += realValue
 		else:
@@ -129,7 +112,7 @@ def generatePositions(positionFilePath):
 	
 
 def updateAkShareData():
-	cacheAllAKShareData()
+	CacheAllAKShareData()
 
 
 if __name__ == "__main__":
