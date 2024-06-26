@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import datetime
+from .TypeDefine import *
 from . import AkShareDataHelper
 from .UserDefinedStockInfoData import DEFAULT_CASH_EXCHANGE_RATE, MANUAL_CASH_EXCHANGE_RATE
 
@@ -19,6 +21,26 @@ class CurrencyExchangeMgr(object):
 		except:
 			self.foreign_exchange_data = None
 			print("encounter error in fetching exchangeRate.. use Default exchange", DEFAULT_CASH_EXCHANGE_RATE)
+
+	def get_previous_working_day(self):
+		today = datetime.date.today()
+		if today.weekday() == 0:  # 周一，前一个工作日是上周五
+			previous_day = today - datetime.timedelta(days=3)
+		elif today.weekday() == 6:  # 周日，前一个工作日是上周五
+			previous_day = today - datetime.timedelta(days=2)
+		else:  # 其他工作日，前一个工作日就是前一天
+			previous_day = today - datetime.timedelta(days=1)
+		return previous_day.strftime("%Y%m%d")
+
+	def getCashBondRate(self, currencyType):
+		t = self.get_previous_working_day()
+		RateData = AkShareDataHelper.GetAkShareData("bond_zh_us_rate", kwargs={"start_date":t})
+		if currencyType in (CurrencyType.USD, CurrencyType.HKD):
+			return RateData['美国国债收益率10年'].values[0]
+		elif currencyType == CurrencyType.CNY:
+			return RateData['中国国债收益率10年'].values[0]
+		else:
+			return 0.0
 
 	def getExchangeRate(self, fromCurrencyType, toCurrencyType):
 		global DEFAULT_CASH_EXCHANGE_RATE, MANUAL_CASH_EXCHANGE_RATE

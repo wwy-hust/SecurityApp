@@ -6,6 +6,7 @@ from ..AkShareDataHelper import GetAkShareData, CallAKShareFuncWithCache
 from ..CurrencyExchangeManager import CurrencyExchangeMgr
 from ..UserDefinedStockInfoData import DEFAULT_US_INFO, MANUAL_US_INFO
 
+from ..FutuAPIDataHelper import FutuApi_US_GetStockInfoData
 
 class USStockInfo(StockInfoBase):
 	currencyType = CurrencyType.USD
@@ -14,6 +15,9 @@ class USStockInfo(StockInfoBase):
 	def fetchCodeData(self):
 		global DEFAULT_US_INFO, MANUAL_US_INFO
 		self.resetData()
+
+		# self.data.update(FutuApi_US_GetStockInfoData(self.code))
+		# self.data['real_price'] = self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY))
 
 		# Fetch Name & Price
 		us_stock_data = GetAkShareData("us_stock_data")

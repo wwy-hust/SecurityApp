@@ -16,6 +16,7 @@ US_STOCK_DATA = None
 ZH_CONVERTIBLE_BOND_DATA = None
 ZH_CONVERTIBLE_BOND_CODE = None
 OPEN_FUND_DAILY_DATA = None
+BOND_ZH_US_RATE = None
 
 
 AKShareDataMap = {
@@ -28,6 +29,7 @@ AKShareDataMap = {
 	"zh_convertible_bond_data": ('bond_zh_hs_cov_spot', '/AkshareDownloadedData/zh_convertible_bond_data.pickle', ZH_CONVERTIBLE_BOND_DATA),
 	"zh_convertible_bond_code": ('bond_zh_cov_info_ths', '/AkshareDownloadedData/zh_convertible_bond_code.pickle', ZH_CONVERTIBLE_BOND_CODE),
 	"open_fund_daily_data": ('fund_open_fund_daily_em', '/AkshareDownloadedData/open_fund_daily_data.pickle', OPEN_FUND_DAILY_DATA),
+	"bond_zh_us_rate": ('bond_zh_us_rate', '/AkshareDownloadedData/bond_zh_us_rate.pickle', BOND_ZH_US_RATE)
 }
 
 
@@ -73,7 +75,6 @@ def ForceWriteConfigTxt(updateCallback = None):
 			json.dump({"datetime": timeStr}, cfgFile, indent=4)
 
 
-
 def CacheAllAKShareData():
 	ForceWriteConfigTxt()
 	for key, (funcName, filePath, cacheData) in AKShareDataMap.items():
@@ -85,8 +86,8 @@ def CacheAllAKShareData():
 			print("Failed to get data for %s, please check your network" % key)
    
 
-def GetAkShareData(getFileKey=None, force=False):
-	global FOREIGN_EXCHANGE_DATA, A_STOCK_DATA, HK_STOCK_DATA, ETF_DATA, LOF_DATA, US_STOCK_DATA, ZH_CONVERTIBLE_BOND_DATA, OPEN_FUND_DAILY_DATA
+def GetAkShareData(getFileKey=None, force=False, kwargs={}):
+	global FOREIGN_EXCHANGE_DATA, A_STOCK_DATA, HK_STOCK_DATA, ETF_DATA, LOF_DATA, US_STOCK_DATA, ZH_CONVERTIBLE_BOND_DATA, OPEN_FUND_DAILY_DATA, BOND_ZH_US_RATE
 	global AKShareDataMap
 
 	if force:
@@ -101,7 +102,7 @@ def GetAkShareData(getFileKey=None, force=False):
 			pass
 		elif not os.path.exists(localFilePath):
 			# print("gettting %s from ak.%s" % (getFileKey, funcName))
-			globalVal = getattr(ak, funcName)()
+			globalVal = getattr(ak, funcName)(**kwargs)
 			globalVal.to_pickle(localFilePath)
 		else:
 			# print("loading %s from %s" % (getFileKey, localFileName))

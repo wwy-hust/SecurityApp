@@ -26,3 +26,5 @@ class CurrencyType(object):
 	HKD = "HKD"
 	USD = "USD"
 	SGD = "SGD"
+
+

@@ -50,9 +50,10 @@ class StockInfoBase(object):
 		self.data['price'] = 0.0
 		self.data['real_price'] = 0.0
 		self.data['name'] = ""
-		self.data['market_value'] = 0.0
-		self.data['pe_ttm'] = 0.0
-		self.data['profit'] = None
+		# self.data['market_value'] = 0.0
+		# self.data['pe_ttm'] = 0.0
+		self.data['dividend_ratio_ttm'] = 0.0
+		# self.data['profit'] = None
 
 	def fetchCodeData(self):
 		raise NotImplementedError

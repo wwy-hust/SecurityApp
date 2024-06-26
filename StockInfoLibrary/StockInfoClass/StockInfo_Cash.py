@@ -17,3 +17,4 @@ class CashInfo(StockInfoBase):
 		else:
 			self.data['price'] = float(CurrencyExchangeMgr.instance().getExchangeRate(self.code, CurrencyType.CNY))
 		self.data['real_price'] = self.data['price']
+		self.data['dividend_ratio_ttm'] = CurrencyExchangeMgr.instance().getCashBondRate(self.code)

@@ -32,4 +32,13 @@ class SGStockInfo(StockInfoBase):
 			if "price" in DEFAULT_SG_INFO[self.code]:
 				self.data['price'] = DEFAULT_SG_INFO[self.code]["price"]
 
-		self.data['real_price'] = self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY))
+		if self.data['dividend_ratio_ttm'] == 0.0:
+			if self.code in MANUAL_SG_INFO:
+				if "dividend_ratio_ttm" in MANUAL_SG_INFO[self.code]:
+					self.data['dividend_ratio_ttm'] = MANUAL_SG_INFO[self.code]["dividend_ratio_ttm"]
+		if self.data['dividend_ratio_ttm'] == 0.0:
+			if self.code in DEFAULT_SG_INFO:
+				if "dividend_ratio_ttm" in DEFAULT_SG_INFO[self.code]:
+					self.data['dividend_ratio_ttm'] = DEFAULT_SG_INFO[self.code]["dividend_ratio_ttm"]
+
+		self.data['real_price'] = round(self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY)), 2)
