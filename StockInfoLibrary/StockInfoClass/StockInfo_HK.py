@@ -18,7 +18,7 @@ class HKStockInfo(StockInfoBase):
 		if G_DataSource == DataSourceType.FUTU:
 			self.data.update(FutuApi_HK_GetStockInfoData(self.code))
 			self.data['real_price'] = round(self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY)), 2)
-		else:
+		elif G_DataSource == DataSourceType.AKSHARE:
 			# Fetch Name & Price
 			hk_stock_data = GetAkShareData("hk_stock_data")
 			hk_stock_filtered = hk_stock_data.loc[lambda df:df['symbol'] == self.code, ['name', 'lasttrade']]
@@ -39,4 +39,7 @@ class HKStockInfo(StockInfoBase):
 				self.data['market_value'] = 0
 				self.data['pe_ttm'] = 0
 
-		
+	def initWithCache(self, data):
+		self.resetData()
+		self.data.update(data)
+		self.data['real_price'] = round(self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY)), 2)

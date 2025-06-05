@@ -20,22 +20,8 @@ MANUAL_CASH_EXCHANGE_RATE = {}
 
 
 ###################### ETF #######################
-DEFAULT_ETF_INFO = {
-    "511090": {
-        "name": "30年国债ETF",
-    },
-    "164824": {
-        "name": "印度基金",
-    },
-}
-
+DEFAULT_ETF_INFO = {}
 MANUAL_ETF_INFO = {
-    "511090": {
-        "price": 111.9,
-    },
-    "164824": {
-        "price": 1.53,
-    },
 }
 ##################################################
 
@@ -47,7 +33,8 @@ MANUAL_A_INFO = {}
 
 
 #################### HK Stock ####################
-DEFAULT_HK_INFO = {}
+DEFAULT_HK_INFO = {
+}
 MANUAL_HK_INFO = {}
 ##################################################
 
@@ -57,37 +44,20 @@ DEFAULT_US_INFO = {
     "TMF": {
         "name": "3倍做多20年期美国国债"
     },
-    "VKTX": {
-        "name": "Viking Therapeutics"
-    },
-    "VIXY": {
-        "name": "波动率指数"
-    }
 }
 MANUAL_US_INFO = {
     "TMF": {
-        "price": 49,
+        "price": 37.5,
+        "dividend_ratio_ttm": 4.45,
     },
-    "VKTX": {
-        "price": 57,
-    },
-    "VIXY": {
-        "price": 11.44,
-    }
 }
 ##################################################
 
 
 #################### SG Stock ####################
 DEFAULT_SG_INFO = {
-    "T14": {
-		"name": "达仁堂SG",
-	}
 }
 MANUAL_SG_INFO = {
-    "T14": {
-		"price": 2.6,
-	}
 }
 ##################################################
 
@@ -95,4 +65,10 @@ MANUAL_SG_INFO = {
 ############## ZH Convertible Bond ###############
 DEFAULT_ZHCVB_INFO = {}
 MANUAL_ZHCVB_INFO = {}
+##################################################
+
+
+############## ZH Public Fund ###############
+DEFAULT_ZH_PUBLIC_FUND_INFO = {}
+MANUAL_ZH_PUBLIC_FUND_INFO = {}
 ##################################################

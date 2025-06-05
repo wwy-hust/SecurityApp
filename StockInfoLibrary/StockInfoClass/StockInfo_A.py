@@ -3,9 +3,8 @@ import akshare as ak
 from .BaseClass import StockInfoBase
 from ..TypeDefine import CodeType, CurrencyType
 from ..AkShareDataHelper import GetAkShareData, CallAKShareFuncWithCache
-
-from ..FutuAPIDataHelper import FutuApi_A_GetStockInfoData
 from ..Config import G_DataSource, DataSourceType
+from ..FutuAPIDataHelper import FutuApi_A_GetStockInfoData
 
 class AStockInfo(StockInfoBase):
 	currencyType = CurrencyType.CNY
@@ -13,12 +12,11 @@ class AStockInfo(StockInfoBase):
 
 	def fetchCodeData(self):
 		self.resetData()
-
+ 
 		if G_DataSource == DataSourceType.FUTU:
 			self.data.update(FutuApi_A_GetStockInfoData(self.code))
 			self.data['real_price'] = self.data['price']
-
-		else:
+		elif G_DataSource == DataSourceType.AKSHARE:
 			# Fetch Name & Price
 			a_stock_data = GetAkShareData("a_stock_data")
 			code_stock_data = a_stock_data.loc[lambda df:df['代码'] == self.code, ['名称', '最新价']]
@@ -38,3 +36,8 @@ class AStockInfo(StockInfoBase):
 			except:
 				self.data['market_value'] = 1
 				self.data['pe_ttm'] = 0.0
+
+	def initWithCache(self, data):
+		self.resetData()
+		self.data.update(data)
+		self.data['real_price'] = self.data['price']

@@ -8,6 +8,7 @@ from .StockInfo_HK import HKStockInfo
 from .StockInfo_SG import SGStockInfo
 from .StockInfo_US import USStockInfo
 from .StockInfo_ZhCB import ZhConvertibleBondInfo
+from .StockInfo_ZhFund import ZhPublicFundInfo
 
 import sys
 import inspect

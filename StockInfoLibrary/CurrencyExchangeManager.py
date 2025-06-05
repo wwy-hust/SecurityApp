@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import datetime
+import math
 from .TypeDefine import *
 from . import AkShareDataHelper
 from .UserDefinedStockInfoData import DEFAULT_CASH_EXCHANGE_RATE, MANUAL_CASH_EXCHANGE_RATE
@@ -35,10 +36,21 @@ class CurrencyExchangeMgr(object):
 	def getCashBondRate(self, currencyType):
 		t = self.get_previous_working_day()
 		RateData = AkShareDataHelper.GetAkShareData("bond_zh_us_rate", kwargs={"start_date":t})
+		# print("cash bound ",currencyType, t, RateData['美国国债收益率10年'].values)
 		if currencyType in (CurrencyType.USD, CurrencyType.HKD):
-			return RateData['美国国债收益率10年'].values[0]
+			found = False
+			foundVal = 0.0
+			index = -1
+			while found == False:
+				foundVal = RateData['美国国债收益率10年'].values[index]
+				if isinstance(foundVal, float) and not math.isnan(foundVal):
+					found = True
+				else:
+					index -= 1
+			# print("foundVal for ", currencyType, foundVal)
+			return foundVal
 		elif currencyType == CurrencyType.CNY:
-			return RateData['中国国债收益率10年'].values[0]
+			return RateData['中国国债收益率10年'].values[-1]
 		else:
 			return 0.0
 

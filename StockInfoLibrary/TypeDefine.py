@@ -8,6 +8,7 @@ class CodeType(object):
 	CURRENCY = 4
 	ZH_CONVERTIBLE_BOND = 5
 	SG_STOCK = 6
+	ZH_PUBLIC_FUND = 7
 
 	INVALID = 9999
 

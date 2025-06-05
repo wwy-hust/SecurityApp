@@ -5,4 +5,9 @@ StockInfoLibrary/__pycache__/*
 StockInfoLibrary/AkshareDownloadedData/*
 *.pickle
 
-config.txt
+StockInfoLibrary/AkshareDownloadedData/config.txt
+
+economy_data.py
+.DS_Store
+
+*.pyc

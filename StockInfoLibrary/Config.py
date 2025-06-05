@@ -6,3 +6,7 @@ class DataSourceType(object):
 
 # G_DataSource = DataSourceType.FUTU
 G_DataSource = DataSourceType.AKSHARE
+
+
+G_Futu_Address = "127.0.0.1"
+G_Futu_Port = 11111

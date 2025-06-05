@@ -16,6 +16,8 @@ def GetCodeType(typeCode):
 		code_type = CodeType.ZH_CONVERTIBLE_BOND
 	elif typeCode == "sg":
 		code_type = CodeType.SG_STOCK
+	elif typeCode == "fund":
+		code_type = CodeType.ZH_PUBLIC_FUND
 	else:
 		code_type = CodeType.INVALID
 	return code_type
@@ -43,6 +45,8 @@ def GetTypeInPortfolio(stockInfo):
 			return TypeInPortfolio.A
 	elif stockInfo.code_type == CodeType.CURRENCY:
 		return TypeInPortfolio.CASH
+	elif stockInfo.code_type == CodeType.ZH_PUBLIC_FUND:
+		return TypeInPortfolio.A
 	return TypeInPortfolio.INVALID
 
 

@@ -22,3 +22,6 @@ class ZhConvertibleBondInfo(StockInfoBase):
 		self.data['real_price'] = self.data['price']
 		self.data['name'] = code_bond_data['name'].values[0]
 
+	def initWithCache(self, data):
+		self.fetchCodeData()
+

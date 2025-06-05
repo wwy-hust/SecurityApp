@@ -13,18 +13,21 @@ class StockInfoClass(type):
 
 
 class StockInfoProxy(object):
-	def __init__(self, code):
-		super(StockInfoProxy, self).__init__()
+	def initWithCode(self, code):
 		codeStr = code.split(".")
-		if len(codeStr) != 2:
+		if len(codeStr) < 2:
 			print("Invalid Code: ", codeStr)
 		typeCode = codeStr[0]
-		readCode = codeStr[1]
+		readCode = ".".join(codeStr[1:])
 		self.originCode = code
 		self.code = readCode
 		self.code_type = GetCodeType(typeCode)
 		self.stockInfo = None
 		self.typeInPorfolio = GetTypeInPortfolio(self)
+
+	def __init__(self, code):
+		super(StockInfoProxy, self).__init__()
+		self.initWithCode(code)
 
 	def __getattr__(self, name):
 		if self.stockInfo:
@@ -53,9 +56,13 @@ class StockInfoBase(object):
 		# self.data['market_value'] = 0.0
 		# self.data['pe_ttm'] = 0.0
 		self.data['dividend_ratio_ttm'] = 0.0
+		self.data['volatility'] = 0.0 # 波动率 = 标的2月内波动 / 大盘指数2月内波动
 		# self.data['profit'] = None
 
 	def fetchCodeData(self):
+		raise NotImplementedError
+
+	def initWithCache(self, data):
 		raise NotImplementedError
 
 	def __getattr__(self, attr):

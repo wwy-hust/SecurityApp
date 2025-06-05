@@ -42,3 +42,6 @@ class SGStockInfo(StockInfoBase):
 					self.data['dividend_ratio_ttm'] = DEFAULT_SG_INFO[self.code]["dividend_ratio_ttm"]
 
 		self.data['real_price'] = round(self.data['price'] * float(CurrencyExchangeMgr.instance().getExchangeRate(self.currencyType, CurrencyType.CNY)), 2)
+
+	def initWithCache(self, data):
+		self.fetchCodeData()
