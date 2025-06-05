@@ -18,11 +18,12 @@
 
 3. (可选，推荐使用futu做数据源，更新更快) 安装futu OpenD https://openapi.futunn.com/futu-api-doc/opend/opend-intro.html
 
-3.1 登录futu OpenD，默认端口是11111，如果端口有变化需要在`Config.py`中修改端口。
+3.1 登录futu OpenD，默认端口是11111，如果端口有变化需要在`StockInfoClass/Config.py`中修改端口。
 
 3.2 `StockInfoClass/Config.py`中修改数据源为`DataSourceType.FUTU`
 
-## Useage
+## Usage
 
-首先修改position.xlsx中的Code和Num字段，Code是证券的代码，Num是持有的数量，修改完毕后执行`python update_position.py`
+修改position.xlsx中的Code和Num字段，Code是证券的代码，Num是持有的数量
+执行`python update_position.py`
 
