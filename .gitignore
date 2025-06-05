@@ -11,3 +11,8 @@ economy_data.py
 .DS_Store
 
 *.pyc
+
+# Test and Coverage Output
+test_output/
+.coverage
+*.coverage

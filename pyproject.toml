@@ -1,0 +1,29 @@
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["test"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+python_classes = ["Test*"]
+timeout = 10
+# addopts = "--cov=. --cov-report=html:./test_output/htmlcov --cov-report=term-missing"
+
+[tool.coverage.run]
+data_file = "./test_output/.coverage"
+source = ["."]
+omit = [
+    "test/*",
+    ".git/*",
+    ".pytest_cache/*",
+    "__pycache__/*",
+    "*/test_*",
+    "*/.venv/*",
+    "*/venv/*"
+]
+
+[tool.coverage.html]
+directory = "./test_output/htmlcov"
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false 
