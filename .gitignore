@@ -1,0 +1,8 @@
+__pycache__/*
+StockInfoLibrary/__pycache__/*
+*/__pycache__/*
+
+StockInfoLibrary/AkshareDownloadedData/*
+*.pickle
+
+config.txt
