@@ -1,3 +1,10 @@
 akshare
 futu-api
-
+protobuf
+colorama
+numpy>=1.20.0
+pandas>=1.3.0
+matplotlib>=3.5.0
+# yfinance>=0.1.87
+seaborn>=0.11.2
+# scikit-learn>=1.0.0
