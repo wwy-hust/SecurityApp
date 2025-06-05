@@ -5,7 +5,7 @@ from ..TypeDefine import CodeType, CurrencyType
 from ..AkShareDataHelper import GetAkShareData, CallAKShareFuncWithCache
 from ..CurrencyExchangeManager import CurrencyExchangeMgr
 from ..UserDefinedStockInfoData import DEFAULT_ETF_INFO, MANUAL_ETF_INFO
-
+from ..Config import G_DataSource, DataSourceType
 from ..FutuAPIDataHelper import FutuApi_ETF_GetStockInfoData
 
 class ETFStockInfo(StockInfoBase):
@@ -16,15 +16,15 @@ class ETFStockInfo(StockInfoBase):
 		global DEFAULT_ETF_INFO, MANUAL_ETF_INFO
 		self.resetData()
 
-		self.data.update(FutuApi_ETF_GetStockInfoData(self.code))
-		self.data['real_price'] = self.data['price']
-
-
-		# etf_data = GetAkShareData("etf_data")
-		# etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
-		# if len(etf_filtered) == 0:
-		# 	etf_data = GetAkShareData("lof_data")
-		# 	etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
+		if G_DataSource == DataSourceType.FUTU:
+			self.data.update(FutuApi_ETF_GetStockInfoData(self.code))
+			self.data['real_price'] = self.data['price']
+		else:
+			etf_data = GetAkShareData("etf_data")
+			etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
+			if len(etf_filtered) == 0:
+				etf_data = GetAkShareData("lof_data")
+				etf_filtered = etf_data.loc[lambda df:df['代码'] == self.code, ["名称", "最新价"]]
 
 		if self.data['name'] == "":
 			if self.code in MANUAL_ETF_INFO:
