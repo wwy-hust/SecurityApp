@@ -2,7 +2,9 @@
 
 个人用来更新仓位和估值的工具
 
-数据来源为FutuApi和Akshare <https://github.com/akfamily/akshare>
+数据来源为FutuApi和Akshare 
+> <https://github.com/akfamily/akshare>
+> <https://github.com/FutunnOpen/py-futu-api>
 
 支持A股、港股、美股、外汇、可转债、ETF。
 
@@ -14,9 +16,9 @@
 > 依赖如下：
 > akshare, futu-api
 
-1. (可选，使用futu做数据源，更新更快) 安装futu OpenD https://openapi.futunn.com/futu-api-doc/opend/opend-intro.html
+3. (可选，推荐使用futu做数据源，更新更快) 安装futu OpenD https://openapi.futunn.com/futu-api-doc/opend/opend-intro.html
 
-3.1 登录futu OpenD，默认端口是11111，如果端口有变化需要在`StockInfoClass/FutuApiDataHelper.py`中修改端口。
+3.1 登录futu OpenD，默认端口是11111，如果端口有变化需要在`Config.py`中修改端口。
 
 3.2 `StockInfoClass/Config.py`中修改数据源为`DataSourceType.FUTU`
 
